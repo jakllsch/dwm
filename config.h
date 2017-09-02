@@ -72,6 +72,15 @@ static const char *mpctogglecmd[] = { "mpc", "toggle", NULL };
 static const char *mpcstopcmd[] = { "mpc", "stop", NULL };
 static const char *mpcprevcmd[] = { "mpc", "prev", NULL };
 static const char *mpcnextcmd[] = { "mpc", "next", NULL };
+#ifdef __linux__
+static const char *amixer_mute_cmd[] = { "amixer", "sset", "Master,0", "toggle", NULL };
+static const char *amixer_micmute_cmd[] = { "amixer", "sset", "Capture,0", "toggle", NULL };
+static const char *amixer_lower_cmd[] = { "amixer", "-M", "sset", "Master,0", "2dB-", NULL };
+static const char *amixer_raise_cmd[] = { "amixer", "-M", "sset", "Master,0", "2dB+", NULL };
+static const char *amixer_shift_mute_cmd[] = { "amixer", "-R", "sset", "Master,0", "0", NULL };
+static const char *amixer_shift_lower_cmd[] = { "amixer", "-M", "sset", "Master,0", "--", "-42dB", NULL };
+static const char *amixer_shift_raise_cmd[] = { "amixer", "-M", "sset", "Master,0", "--", "-27dB", NULL };
+#endif
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
@@ -112,6 +121,15 @@ static Key keys[] = {
 	{ 0,                            XF86XK_AudioStop, spawn,   {.v = mpcstopcmd } },
 	{ 0,                            XF86XK_AudioPrev, spawn,   {.v = mpcprevcmd } },
 	{ 0,                            XF86XK_AudioNext, spawn,   {.v = mpcnextcmd } },
+#ifdef __linux__
+	{ 0,				XF86XK_AudioMute, spawn,   {.v = amixer_mute_cmd } },
+	{ 0,				XF86XK_AudioLowerVolume, spawn,   {.v = amixer_lower_cmd } },
+	{ 0,				XF86XK_AudioRaiseVolume, spawn,   {.v = amixer_raise_cmd } },
+	{ 0,				XF86XK_AudioMicMute, spawn,   {.v = amixer_micmute_cmd } },
+	{ ShiftMask,			XF86XK_AudioMute, spawn,   {.v = amixer_shift_mute_cmd } },
+	{ ShiftMask,			XF86XK_AudioLowerVolume, spawn,   {.v = amixer_shift_lower_cmd } },
+	{ ShiftMask,			XF86XK_AudioRaiseVolume, spawn,   {.v = amixer_shift_raise_cmd } },
+#endif
 };
 
 /* button definitions */
