@@ -38,6 +38,7 @@ static const Rule rules[] = {
 	{ "MPlayer",  "xv",       NULL,       0,            1,           -1 },
 	{ "mpv",      "gl",       NULL,       0,            1,           -1 },
 	{ "mpv",      "xv",       NULL,       0,            1,           -1 },
+	{ "SDL_App",  NULL,       NULL,       0,            1,           -1 },
 };
 
 /* layout(s) */
