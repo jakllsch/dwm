@@ -1,5 +1,11 @@
 /* See LICENSE file for copyright and license details. */
 
+#include <X11/DECkeysym.h>
+#include <X11/HPkeysym.h>
+#include <X11/Sunkeysym.h>
+#include <X11/XF86keysym.h>
+#include <X11/ap_keysym.h>
+
 /* appearance */
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
@@ -7,19 +13,20 @@ static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const char *fonts[]          = { "monospace:size=10" };
 static const char dmenufont[]       = "monospace:size=10";
-static const char col_gray1[]       = "#222222";
-static const char col_gray2[]       = "#444444";
-static const char col_gray3[]       = "#bbbbbb";
-static const char col_gray4[]       = "#eeeeee";
-static const char col_cyan[]        = "#005577";
+static const char col_normfg[]      = "#bbbbbb";
+static const char col_normbg[]      = "#222222";
+static const char col_normborder[]  = "#444444";
+static const char col_selfg[]       = "#eeeeee";
+static const char col_selbg[]       = "#333333";
+static const char col_selborder[]   = "#111111";
 static const char *colors[][3]      = {
-	/*               fg         bg         border   */
-	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
-	[SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
+	/*               fg          bg          border         */
+	[SchemeNorm] = { col_normfg, col_normbg, col_normborder },
+	[SchemeSel] =  { col_selfg,  col_selbg,  col_selborder  },
 };
 
 /* tagging */
-static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+static const char *tags[] = { "α", "β", "γ", "δ", "ε", "ζ", "η", "θ", "ι" };
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -28,11 +35,12 @@ static const Rule rules[] = {
 	 */
 	/* class      instance    title       tags mask     isfloating   monitor */
 	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
-	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
+	{ "Firefox",  NULL,       NULL,       0,            0,           -1 },
+	{ "MPlayer",  "xv",       NULL,       0,            1,           -1 },
 };
 
 /* layout(s) */
-static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
+static const float mfact     = 0.50; /* factor of master area size [0.05..0.95] */
 static const int nmaster     = 1;    /* number of clients in master area */
 static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
 
@@ -44,7 +52,7 @@ static const Layout layouts[] = {
 };
 
 /* key definitions */
-#define MODKEY Mod1Mask
+#define MODKEY Mod4Mask
 #define TAGKEYS(KEY,TAG) \
 	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
 	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
@@ -56,8 +64,12 @@ static const Layout layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
-static const char *termcmd[]  = { "st", NULL };
+static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_normbg, "-nf", col_normfg, "-sb", col_selbg, "-sf", col_selfg, NULL };
+static const char *termcmd[]  = { "urxvtc", NULL };
+static const char *mpctogglecmd[] = { "mpc", "toggle", NULL };
+static const char *mpcstopcmd[] = { "mpc", "stop", NULL };
+static const char *mpcprevcmd[] = { "mpc", "prev", NULL };
+static const char *mpcnextcmd[] = { "mpc", "next", NULL };
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
@@ -94,6 +106,10 @@ static Key keys[] = {
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
+	{ 0,                            XF86XK_AudioPlay, spawn,   {.v = mpctogglecmd } },
+	{ 0,                            XF86XK_AudioStop, spawn,   {.v = mpcstopcmd } },
+	{ 0,                            XF86XK_AudioPrev, spawn,   {.v = mpcprevcmd } },
+	{ 0,                            XF86XK_AudioNext, spawn,   {.v = mpcnextcmd } },
 };
 
 /* button definitions */
