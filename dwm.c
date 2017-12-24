@@ -263,7 +263,7 @@ static void (*handler[LASTEvent]) (XEvent *) = {
 static Atom wmatom[WMLast], netatom[NetLast];
 static int running = 1;
 static Cur *cursor[CurLast];
-static Scm *scheme;
+static Clr **scheme;
 static Display *dpy;
 static Drw *drw;
 static Monitor *mons, *selmon;
@@ -910,8 +910,7 @@ gettextprop(Window w, Atom atom, char *text, unsigned int size)
 	if (!text || size == 0)
 		return 0;
 	text[0] = '\0';
-	XGetTextProperty(dpy, w, &name, atom);
-	if (!name.nitems)
+	if (!XGetTextProperty(dpy, w, &name, atom) || !name.nitems)
 		return 0;
 	if (name.encoding == XA_STRING)
 		strncpy(text, (char *)name.value, size - 1);
@@ -1569,7 +1568,7 @@ setup(void)
 	cursor[CurResize] = drw_cur_create(drw, XC_sizing);
 	cursor[CurMove] = drw_cur_create(drw, XC_fleur);
 	/* init appearance */
-	scheme = ecalloc(LENGTH(colors), sizeof(Scm));
+	scheme = ecalloc(LENGTH(colors), sizeof(Clr *));
 	for (i = 0; i < LENGTH(colors); i++)
 		scheme[i] = drw_scm_create(drw, colors[i], 3);
 	/* init bars */
@@ -1809,6 +1808,7 @@ updatebars(void)
 		.background_pixmap = ParentRelative,
 		.event_mask = ButtonPressMask|ExposureMask
 	};
+	XClassHint ch = {"dwm", "dwm"};
 	for (m = mons; m; m = m->next) {
 		if (m->barwin)
 			continue;
@@ -1817,6 +1817,7 @@ updatebars(void)
 				CWOverrideRedirect|CWBackPixmap|CWEventMask, &wa);
 		XDefineCursor(dpy, m->barwin, cursor[CurNormal]->cursor);
 		XMapRaised(dpy, m->barwin);
+		XSetClassHint(dpy, m->barwin, &ch);
 	}
 }
 
@@ -1981,8 +1982,7 @@ updatesizehints(Client *c)
 		c->maxa = (float)size.max_aspect.x / size.max_aspect.y;
 	} else
 		c->maxa = c->mina = 0.0;
-	c->isfixed = (c->maxw && c->minw && c->maxh && c->minh
-		&& c->maxw == c->minw && c->maxh == c->minh);
+	c->isfixed = (c->maxw && c->maxh && c->maxw == c->minw && c->maxh == c->minh);
 }
 
 void
