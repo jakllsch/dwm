@@ -48,11 +48,82 @@ static const float mfact     = MFCT; /* factor of master area size [0.05..0.95] 
 static const int nmaster     = 1;    /* number of clients in master area */
 static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
 
+static inline void
+tile2(Monitor *m, int right)
+{
+	unsigned int i, n, h, mw, my, ty, nmaster;
+	Client *c, *nc;
+
+
+	for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
+	if (n == 0)
+		return;
+
+	nmaster = m->nmaster;
+again:
+	if (n > nmaster)
+		mw = nmaster ? m->ww * m->mfact : 0;
+	else
+		mw = m->ww;
+
+
+	for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
+		if (i < nmaster) {
+			mw = MAX(mw, c->minw);
+			mw = MAX(mw, c->basew + c->incw * 80 + 2*c->bw);
+		}
+
+	for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+		nc = nexttiled(c->next);
+		if (i < nmaster) {
+			h = (m->wh - my) / (MIN(n, nmaster) - i);
+			h = MAX(h, c->baseh + c->inch * 25 + 2*c->bw);
+			h = MIN(h, m->wh - my);
+			if ((i + 1 < nmaster) && c->inch == 0 && nc && (h + nc->baseh + nc->inch * 25 + 2*c->bw) > m->wh) {
+				//h = my - (nc->baseh + nc->inch * 25 + 2*c->bw);
+				h = m->wh - my - (nc->baseh + nc->inch * 25 + 2*c->bw);
+			}
+			if (right)
+				resize(c, m->wx + m->ww - mw, m->wy + my, mw - (2*c->bw), h - (2*c->bw), 0);
+			else
+				resize(c, m->wx, m->wy + my, mw - (2*c->bw), h - (2*c->bw), 0);
+			my += HEIGHT(c);
+			if (my > m->wh && nmaster > 1) {
+				nmaster--;
+				goto again;
+			}
+		} else {
+			h = (m->wh - ty) / (n - i);
+			if (right)
+				resize(c, m->wx , m->wy + ty, m->ww - mw - (2*c->bw), h - (2*c->bw), 0);
+			else
+				resize(c, m->wx + mw, m->wy + ty, m->ww - mw - (2*c->bw), h - (2*c->bw), 0);
+			ty += HEIGHT(c);
+		}
+	}
+
+	return;
+}
+
+static inline void
+tileL(Monitor *m)
+{
+	tile2(m, 0);
+}
+
+static inline void
+tileR(Monitor *m)
+{
+	tile2(m, 1);
+}
+
 static const Layout layouts[] = {
 	/* symbol     arrange function */
 	{ "[]=",      tile },    /* first entry is default */
 	{ "><>",      NULL },    /* no layout function means floating behavior */
 	{ "[M]",      monocle },
+	{ "[L]",      tileL },
+	{ "[R]",      tileR },
 };
 
 /* key definitions */
@@ -100,10 +171,11 @@ static Key keys[] = {
 	{ MODKEY,                       XK_Return, zoom,           {0} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
 	{ MODKEY|ShiftMask,             XK_c,      killclient,     {0} },
-	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
 	{ MODKEY|ShiftMask,             XK_t,      setlayout,      {.v = &layouts[0]} },
 	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
+	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[3]} },
+	{ MODKEY,                       XK_n,      setlayout,      {.v = &layouts[4]} },
 	{ MODKEY,                       XK_space,  setlayout,      {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
