@@ -26,7 +26,7 @@ static const char *colors[][3]      = {
 };
 
 /* tagging */
-static const char *tags[] = { "α", "β", "γ", "δ", "ε", "ζ", "η", "θ", "ι" };
+static const char *tags[] = { "♈", "♉", "♊", "♋", "♌", "♍", "♎", "♏", "♐", "♑", "♒", "♓" };
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -104,6 +104,8 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
 	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
+	{ MODKEY,                       XK_a,      view,           {.ui = ~0 } },
+	{ MODKEY|ShiftMask,             XK_a,      tag,            {.ui = ~0 } },
 	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
@@ -117,6 +119,18 @@ static Key keys[] = {
 	TAGKEYS(                        XK_7,                      6)
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
+	TAGKEYS(                        XK_F1,                     0)
+	TAGKEYS(                        XK_F2,                     1)
+	TAGKEYS(                        XK_F3,                     2)
+	TAGKEYS(                        XK_F4,                     3)
+	TAGKEYS(                        XK_F5,                     4)
+	TAGKEYS(                        XK_F6,                     5)
+	TAGKEYS(                        XK_F7,                     6)
+	TAGKEYS(                        XK_F8,                     7)
+	TAGKEYS(                        XK_F9,                     8)
+	TAGKEYS(                        XK_F10,                    9)
+	TAGKEYS(                        XK_F11,                    10)
+	TAGKEYS(                        XK_F12,                    11)
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
 	{ 0,                            XF86XK_AudioPlay, spawn,   {.v = mpctogglecmd } },
 	{ 0,                            XF86XK_AudioStop, spawn,   {.v = mpcstopcmd } },
