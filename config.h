@@ -15,10 +15,10 @@ static const char *fonts[]          = { "monospace:size=10" };
 static const char dmenufont[]       = "monospace:size=10";
 static const char col_normfg[]      = "#bbbbbb";
 static const char col_normbg[]      = "#222222";
-static const char col_normborder[]  = "#444444";
-static const char col_selfg[]       = "#eeeeee";
-static const char col_selbg[]       = "#333333";
-static const char col_selborder[]   = "#111111";
+static const char col_normborder[]  = "#000000";
+static const char col_selfg[]       = "#ffffff";
+static const char col_selbg[]       = "MediumOrchid4";
+static const char col_selborder[]   = "MediumOrchid1";
 static const char *colors[][3]      = {
 	/*               fg          bg          border         */
 	[SchemeNorm] = { col_normfg, col_normbg, col_normborder },
